@@ -36,12 +36,10 @@ func solve() {
 
 		b := make([]int, n)
 		for i := 0; i < n; i++ {
-			b[i] = a[i]
-		}
-
-		for i := 1; i < n; i++ {
-			if b[i] < b[i-1] {
-				b[i] += k
+			if a[i] < a[firstIdx] {
+				b[i] = a[i] + k
+			} else {
+				b[i] = a[i]
 			}
 		}
 
