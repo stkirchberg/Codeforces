@@ -19,26 +19,33 @@ func solve() {
 			fmt.Fscan(reader, &a[i])
 		}
 
-		firstIdx := -1
+		idx := -1
 		for i := 0; i < n-1; i++ {
 			if a[i] > a[i+1] {
-				firstIdx = i
+				idx = i
 				break
 			}
 		}
 
-		if firstIdx == -1 {
+		if idx == -1 {
 			fmt.Println("YES")
 			continue
 		}
 
-		k := a[firstIdx] - a[firstIdx+1]
+		k := a[idx] - a[idx+1]
+
+		if k < 0 {
+			k = -k
+		}
 
 		b := make([]int, n)
 		copy(b, a)
 
-		for i := firstIdx + 1; i < n; i++ {
-			b[i] += k
+		threshold := a[idx+1]
+		for i := 0; i <= idx; i++ {
+			if b[i] < threshold {
+				b[i] += k
+			}
 		}
 
 		ok := true
