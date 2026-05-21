@@ -6,64 +6,63 @@ import (
 	"os"
 )
 
-func solve() {
-	reader := bufio.NewReader(os.Stdin)
+func solve(in *bufio.Reader, out *bufio.Writer) {
 	var t int
-	fmt.Fscan(reader, &t)
+	if _, err := fmt.Fscan(in, &t); err != nil {
+		return
+	}
 
 	for tc := 0; tc < t; tc++ {
 		var n int
-		fmt.Fscan(reader, &n)
+		fmt.Fscan(in, &n)
+
 		a := make([]int, n)
 		for i := 0; i < n; i++ {
-			fmt.Fscan(reader, &a[i])
+			fmt.Fscan(in, &a[i])
 		}
 
-		idx := -1
+		maxDiff := 0
 		for i := 0; i < n-1; i++ {
 			if a[i] > a[i+1] {
-				idx = i
-				break
+				diff := a[i] - a[i+1]
+				if diff > maxDiff {
+					maxDiff = diff
+				}
 			}
 		}
 
-		if idx == -1 {
-			fmt.Println("YES")
+		if maxDiff == 0 {
+			fmt.Fprintln(out, "YES")
 			continue
 		}
 
-		k := a[idx] - a[idx+1]
+		k := maxDiff
+		possible := true
+		prev := a[0]
 
-		if k < 0 {
-			k = -k
-		}
-
-		b := make([]int, n)
-		copy(b, a)
-
-		threshold := a[idx+1]
-		for i := 0; i <= idx; i++ {
-			if b[i] < threshold {
-				b[i] += k
-			}
-		}
-
-		ok := true
-		for i := 0; i < n-1; i++ {
-			if b[i] > b[i+1] {
-				ok = false
+		for i := 1; i < n; i++ {
+			if a[i] >= prev {
+				prev = a[i]
+			} else if a[i]+k >= prev {
+				prev = a[i] + k
+			} else {
+				possible = false
 				break
 			}
 		}
 
-		if ok {
-			fmt.Println("YES")
+		if possible {
+			fmt.Fprintln(out, "YES")
 		} else {
-			fmt.Println("NO")
+			fmt.Fprintln(out, "NO")
 		}
 	}
 }
 
 func main() {
-	solve()
+	in := bufio.NewReader(os.Stdin)
+	out := bufio.NewWriter(os.Stdout)
+	defer out.Flush()
+
+	solve(in, out)
 }
