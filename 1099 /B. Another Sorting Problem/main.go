@@ -35,12 +35,10 @@ func solve() {
 		k := a[firstIdx] - a[firstIdx+1]
 
 		b := make([]int, n)
-		for i := 0; i < n; i++ {
-			if a[i] < a[firstIdx] {
-				b[i] = a[i] + k
-			} else {
-				b[i] = a[i]
-			}
+		copy(b, a)
+
+		for i := firstIdx + 1; i < n; i++ {
+			b[i] += k
 		}
 
 		ok := true
