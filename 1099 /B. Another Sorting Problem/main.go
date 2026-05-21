@@ -35,21 +35,25 @@ func solve() {
 		k := a[firstIdx] - a[firstIdx+1]
 
 		b := make([]int, n)
-		copy(b, a)
-
-		for i := firstIdx + 1; i < n; i++ {
-			b[i] += k
+		for i := 0; i < n; i++ {
+			b[i] = a[i]
 		}
 
-		possible := true
+		for i := 1; i < n; i++ {
+			if b[i] < b[i-1] {
+				b[i] += k
+			}
+		}
+
+		ok := true
 		for i := 0; i < n-1; i++ {
 			if b[i] > b[i+1] {
-				possible = false
+				ok = false
 				break
 			}
 		}
 
-		if possible {
+		if ok {
 			fmt.Println("YES")
 		} else {
 			fmt.Println("NO")
