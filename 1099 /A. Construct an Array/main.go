@@ -1,47 +1,33 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 )
 
 func solve() {
-	reader := bufio.NewReader(os.Stdin)
-	writer := bufio.NewWriter(os.Stdout)
-	defer writer.Flush()
+	var n int
+	fmt.Scan(&n)
 
-	var t int
-	fmt.Fscan(reader, &t)
+	var result []int
 
-	for i := 0; i < t; i++ {
-		var n int
-		fmt.Fscan(reader, &n)
-
-		res := make([]int, n)
-		left := 1
-		right := 2 * n
-
-		for j := 0; j < n; j++ {
-			if j%2 == 0 {
-				res[j] = left
-				left++
-			} else {
-				res[j] = right
-				right--
-			}
-		}
-
-		for j := 0; j < n; j++ {
-			fmt.Fprintf(writer, "%d", res[j])
-			if j < n-1 {
-				fmt.Fprint(writer, " ")
-			}
-		}
-		fmt.Fprintln(writer)
+	for i := 1; i <= 2*n; i += 2 {
+		result = append(result, i)
 	}
+
+	for i := 2; i <= 2*n; i += 2 {
+		result = append(result, i)
+	}
+
+	for i := 0; i < n; i++ {
+		fmt.Printf("%d ", result[i])
+	}
+	fmt.Println()
 }
 
 func main() {
-	solve()
+	var t int
+	fmt.Scan(&t)
+	for i := 0; i < t; i++ {
+		solve()
+	}
 }
