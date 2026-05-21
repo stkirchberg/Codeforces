@@ -8,9 +8,6 @@ import (
 
 func solve() {
 	reader := bufio.NewReader(os.Stdin)
-	writer := bufio.NewWriter(os.Stdout)
-	defer writer.Flush()
-
 	var t int
 	fmt.Fscan(reader, &t)
 
@@ -22,42 +19,40 @@ func solve() {
 			fmt.Fscan(reader, &a[i])
 		}
 
-		idx := -1
+		firstIdx := -1
 		for i := 0; i < n-1; i++ {
 			if a[i] > a[i+1] {
-				idx = i
+				firstIdx = i
 				break
 			}
 		}
 
-		if idx == -1 {
-			fmt.Fprintln(writer, "YES")
+		if firstIdx == -1 {
+			fmt.Println("YES")
 			continue
 		}
 
-		k := a[idx] - a[idx+1]
+		k := a[firstIdx] - a[firstIdx+1]
+
+		b := make([]int, n)
+		copy(b, a)
+
+		for i := firstIdx + 1; i < n; i++ {
+			b[i] += k
+		}
 
 		possible := true
-		prev := -1
-
-		for i := 0; i < n; i++ {
-			val := a[i]
-
-			if i > idx {
-				val += k
-			}
-
-			if val < prev {
+		for i := 0; i < n-1; i++ {
+			if b[i] > b[i+1] {
 				possible = false
 				break
 			}
-			prev = val
 		}
 
 		if possible {
-			fmt.Fprintln(writer, "YES")
+			fmt.Println("YES")
 		} else {
-			fmt.Fprintln(writer, "NO")
+			fmt.Println("NO")
 		}
 	}
 }
