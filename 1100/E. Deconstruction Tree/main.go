@@ -8,6 +8,13 @@ import (
 
 const MOD = 998244353
 
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
 func main() {
 	reader := bufio.NewReader(os.Stdin)
 	writer := bufio.NewWriter(os.Stdout)
@@ -23,115 +30,76 @@ func main() {
 		fmt.Fscan(reader, &n)
 
 		adj := make([][]int, n+1)
+		deg := make([]int, n+1)
 		for i := 0; i < n-1; i++ {
 			var u, v int
 			fmt.Fscan(reader, &u, &v)
 			adj[u] = append(adj[u], v)
 			adj[v] = append(adj[v], u)
+			deg[u]++
+			deg[v]++
 		}
 
-		p := make([]int, n+1)
-		children := make([][]int, n+1)
-
-		var dfs_init func(u, parent int)
-		dfs_init = func(u, parent int) {
-			p[u] = parent
-			for _, v := range adj[u] {
-				if v != parent {
-					children[u] = append(children[u], v)
-					dfs_init(v, u)
-				}
+		X_0 := 0
+		for i := 1; i <= n; i++ {
+			if deg[i] == 1 {
+				X_0 = max(X_0, i)
 			}
 		}
-		dfs_init(n, 0)
 
 		M := make([]int, n+1)
-		var dfs_M func(u int)
-		dfs_M = func(u int) {
+		var dfs_M func(u, p int)
+		dfs_M = func(u, p int) {
 			M[u] = u
-			for _, v := range children[u] {
-				dfs_M(v)
-				if M[v] > M[u] {
-					M[u] = M[v]
+			for _, v := range adj[u] {
+				if v != p {
+					dfs_M(v, u)
+					M[u] = max(M[u], M[v])
 				}
 			}
 		}
-		dfs_M(n)
+		dfs_M(n, 0)
 
-		p_cont := make([]int, n+1)
-		var dfs_cont func(u, last_valid int)
-		dfs_cont = func(u, last_valid int) {
-			if u != n && M[u] == u {
-				p_cont[u] = last_valid
-				last_valid = u
+		max_child := make([]int, n+1)
+		var dfs_calc func(u, p, last_valid int)
+		dfs_calc = func(u, p, last_valid int) {
+			next_valid := last_valid
+			if M[u] == u {
+				if last_valid != 0 {
+					max_child[last_valid] = max(max_child[last_valid], u)
+				}
+				next_valid = u
 			}
-			for _, v := range children[u] {
-				dfs_cont(v, last_valid)
-			}
-		}
-		dfs_cont(n, n)
-
-		var S_curr int64 = 0
-		W := make([]int64, n+1)
-		for u := n - 1; u >= 1; u-- {
-			if M[u] != u {
-				continue
-			}
-			p_c := p_cont[u]
-			var sum int64
-			if p_c == n {
-				sum = S_curr
-			} else {
-				sum = (S_curr - W[p_c] + MOD) % MOD
-			}
-			if sum == 0 {
-				W[u] = 1
-			} else {
-				W[u] = sum
-			}
-			S_curr = (S_curr + W[u]) % MOD
-		}
-
-		is_leaf := make([]bool, n+1)
-		var L_max int = 0
-		for u := 1; u <= n; u++ {
-			if u != n && len(children[u]) == 0 {
-				is_leaf[u] = true
-				if u > L_max {
-					L_max = u
+			for _, v := range adj[u] {
+				if v != p {
+					dfs_calc(v, u, next_valid)
 				}
 			}
 		}
+		dfs_calc(n, 0, 0)
 
-		in_candidates := make([]bool, n+1)
-		has_candidates := false
-		for u := 1; u <= n; u++ {
-			if is_leaf[u] && u != L_max {
-				curr := p[u]
-				for curr != n {
-					if M[curr] == curr && curr > L_max {
-						if !in_candidates[curr] {
-							in_candidates[curr] = true
-							has_candidates = true
-						}
-						break
-					}
-					curr = p[curr]
+		dp := make([]int64, n+1)
+		pref := make([]int64, n+1)
+
+		dp[X_0] = 1
+		for i := 1; i <= n; i++ {
+			if M[i] == i && i > X_0 {
+				var L, R int
+				if i == n {
+					L = max_child[n]
+					R = n - 1
+				} else {
+					L = max_child[i] + 1
+					R = i - 1
+				}
+				if L <= R {
+					sum := (pref[R] - pref[L-1] + MOD) % MOD
+					dp[i] = sum
 				}
 			}
+			pref[i] = (pref[i-1] + dp[i]) % MOD
 		}
 
-		var ans int64 = 0
-		if !has_candidates {
-			ans = 1
-		} else {
-			for u := 1; u <= n; u++ {
-				if in_candidates[u] {
-					ans = (ans + W[u]) % MOD
-				}
-			}
-		}
-
-		fmt.Fprintln(writer, ans)
+		fmt.Fprintln(writer, dp[n])
 	}
 }
