@@ -18,9 +18,10 @@ void solve() {
             ans[i] = 1;
         } else if(b[i] > 0) {
             long long d = b[i];
-            long long l = max(0LL, i - d + 1);
-            long long r = min(n - 1, i + d - 1);
+            long long l = max(0LL, i - d);
+            long long r = min(n - 1, i + d);
             for(long long j = l; j <= r; j++) {
+                if(j == i - d || j == i + d) continue;
                 if(ans[j] == 1) ok = false;
                 ans[j] = 0;
             }
@@ -28,14 +29,17 @@ void solve() {
             long long right_pos = i + d;
             bool can_l = (left_pos >= 0 && ans[left_pos] != 0);
             bool can_r = (right_pos < n && ans[right_pos] != 0);
-            if(!can_l && !can_r) ok = false;
-            if(ok) {
-                if(can_l && !can_r) ans[left_pos] = 1;
+            if(left_pos < 0 && right_pos >= n) ok = false;
+            else if(left_pos < 0) {
+                if(ans[right_pos] == 0) ok = false;
+                ans[right_pos] = 1;
+            } else if(right_pos >= n) {
+                if(ans[left_pos] == 0) ok = false;
+                ans[left_pos] = 1;
+            } else {
+                if(!can_l && !can_r) ok = false;
+                else if(can_l && !can_r) ans[left_pos] = 1;
                 else if(!can_l && can_r) ans[right_pos] = 1;
-                else {
-                    if(can_l) ans[left_pos] = 1;
-                    if(can_r) ans[right_pos] = 1;
-                }
             }
         }
     }
@@ -52,10 +56,19 @@ void solve() {
     if(count1 == 0) {
         bool placed = false;
         for(long long i = 0; i < n; i++) {
-            if(ans[i] != 0) {
+            if(ans[i] == -1) {
                 ans[i] = 1;
                 placed = true;
                 break;
+            }
+        }
+        if(!placed) {
+            for(long long i = 0; i < n; i++) {
+                if(ans[i] == 0) {
+                    ans[i] = 1;
+                    placed = true;
+                    break;
+                }
             }
         }
         if(!placed) {
