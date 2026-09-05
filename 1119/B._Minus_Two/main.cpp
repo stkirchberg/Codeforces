@@ -1,28 +1,22 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <map>
-
+#include <bits/stdc++.h>
 using namespace std;
 
 void solve() {
     int n;
     cin >> n;
-    vector<int> a(n);
-    for (int i = 0; i < n; ++i) {
-        cin >> a[i];
-    }
-
-    int max_freq = 0;
-    for (int step = 0; step < 40; ++step) {
-        map<int, int> freq;
-        for (int i = 0; i < n; ++i) {
-            freq[a[i]]++;
-            max_freq = max(max_freq, freq[a[i]]);
-            a[i] = abs(a[i] - 2);
+    int odd = 0, mod0 = 0, mod2 = 0;
+    for (int i = 0; i < n; i++) {
+        int x;
+        cin >> x;
+        if (x & 1) {
+            odd++;
+        } else if (x % 4 == 0) {
+            mod0++;
+        } else {
+            mod2++;
         }
     }
-    cout << max_freq << "\n";
+    cout << max({odd, mod0, mod2}) << "\n";
 }
 
 int main() {
