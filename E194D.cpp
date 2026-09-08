@@ -7,19 +7,10 @@ void solve() {
     string s;
     cin >> s;
     
-    if (s[0] == '0') {
-        cout << -1 << "\n";
-        return;
-    }
-    
     long long m = 0;
     long long c = 0;
     
     for (long long i = 0; i < n; i++) {
-        if (s[i] == '0') {
-            cout << -1 << "\n";
-            return;
-        }
         if (i == 0) {
             c = 1;
         } else {
