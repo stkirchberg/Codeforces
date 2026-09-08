@@ -1,30 +1,50 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-bool f(long long k, string s) {
+bool c(long long k, const string& s) {
     long long l = 0, r = 0;
-    for (char c : s) {
-        long long u = 1e18, v = -1e18;
+    for (char x : s) {
+        long long u, v;
         if (l == r) {
             long long w = l;
-            long long a1 = w - k, b1 = w - 1;
-            long long a2 = w + 1, b2 = w + k;
-            if (c == '+') {
-                a1 = max(a1, 1LL); a2 = max(a2, 1LL);
-            } else if (c == '-') {
-                b1 = min(b1, -1LL); b2 = min(b2, -1LL);
+            long long a = w - k, b = w - 1;
+            long long d = w + 1, e = w + k;
+            if (x == '+') {
+                a = max(a, 1LL);
+                d = max(d, 1LL);
+            } else if (x == '-') {
+                b = min(b, -1LL);
+                e = min(e, -1LL);
             } else {
-                a1 = max(a1, 0LL); b1 = min(b1, 0LL);
-                a2 = max(a2, 0LL); b2 = min(b2, 0LL);
+                a = max(a, 0LL); b = min(b, 0LL);
+                d = max(d, 0LL); e = min(e, 0LL);
             }
-            if (a1 <= b1) { u = min(u, a1); v = max(v, b1); }
-            if (a2 <= b2) { u = min(u, a2); v = max(v, b2); }
+            bool f = (a <= b);
+            bool g = (d <= e);
+            if (f && g) {
+                u = min(a, d);
+                v = max(b, e);
+            } else if (f) {
+                u = a; v = b;
+            } else if (g) {
+                u = d; v = e;
+            } else {
+                return false;
+            }
         } else {
             long long a = l - k, b = r + k;
-            if (c == '+') { u = max(a, 1LL); v = b; }
-            else if (c == '-') { u = a; v = min(b, -1LL); }
-            else {
-                if (a <= 0 && 0 <= b) { u = 0; v = 0; }
+            if (x == '+') {
+                u = max(a, 1LL);
+                v = b;
+            } else if (x == '-') {
+                u = a;
+                v = min(b, -1LL);
+            } else {
+                if (a <= 0 && 0 <= b) {
+                    u = 0; v = 0;
+                } else {
+                    return false;
+                }
             }
         }
         if (u > v) return false;
@@ -38,17 +58,18 @@ void solve() {
     cin >> n;
     string s;
     cin >> s;
-    long long l = 1, r = n + 2, a = -1;
-    while (l <= r) {
-        long long m = (l + r) / 2;
-        if (f(m, s)) {
-            a = m;
-            r = m - 1;
+    
+    long long a = 1, b = n + 2, p = -1;
+    while (a <= b) {
+        long long m = a + (b - a) / 2;
+        if (c(m, s)) {
+            p = m;
+            b = m - 1;
         } else {
-            l = m + 1;
+            a = m + 1;
         }
     }
-    cout << a << "\n";
+    cout << p << "\n";
 }
 
 int main() {
