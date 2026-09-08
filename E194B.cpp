@@ -4,11 +4,14 @@ using namespace std;
 void solve() {
     long long x, y, k;
     cin >> x >> y >> k;
+    long long d = y - x;
     long long s = 0;
-    for (long long i = 0; i < k; i++) {
-        long long a = x + i;
-        long long b = y + i;
-        s += b % a;
+    long long m = min(k, max(0LL, d - x + 1));
+    for (long long i = 0; i < m; i++) {
+        s += (y + i) % (x + i);
+    }
+    if (k > m) {
+        s += (k - m) * d;
     }
     cout << s << "\n";
 }
