@@ -9,23 +9,28 @@ string s;
 int n;
 
 bool chk(long long c) {
-    vector<P> a;
-    a.push_back({0, 0});
+    P a[4];
+    int na = 1;
+    a[0] = {0, 0};
+    
     for (int i = 0; i < n; i++) {
-        vector<P> b;
-        for (auto x : a) {
-            if (x.l < x.r) {
-                b.push_back({x.l - c, x.r + c});
+        P b[8];
+        int nb = 0;
+        for (int j = 0; j < na; j++) {
+            if (a[j].l < a[j].r) {
+                b[nb++] = {a[j].l - c, a[j].r + c};
             } else {
-                long long v = x.l;
-                b.push_back({v - c, v - 1});
-                b.push_back({v + 1, v + c});
+                long long v = a[j].l;
+                b[nb++] = {v - c, v - 1};
+                b[nb++] = {v + 1, v + c};
             }
         }
-        vector<P> d;
+        
+        P d[8];
+        int nd = 0;
         char ch = s[i];
-        for (auto x : b) {
-            long long nl = x.l, nr = x.r;
+        for (int j = 0; j < nb; j++) {
+            long long nl = b[j].l, nr = b[j].r;
             if (ch == '+') {
                 nl = max(nl, 1LL);
             } else if (ch == '-') {
@@ -35,26 +40,34 @@ bool chk(long long c) {
                 nr = min(nr, 0LL);
             }
             if (nl <= nr) {
-                d.push_back({nl, nr});
+                d[nd++] = {nl, nr};
             }
         }
-        if (d.empty()) return false;
         
-        vector<P> m;
-        for (auto x : d) {
-            if (m.empty()) {
-                m.push_back(x);
-            } else {
-                if (x.l <= m.back().r + 1) {
-                    m.back().r = max(m.back().r, x.r);
-                } else {
-                    m.push_back(x);
+        if (nd == 0) return false;
+        
+        for (int j = 0; j < nd; j++) {
+            for (int k = j + 1; k < nd; k++) {
+                if (d[j].l > d[k].l) {
+                    swap(d[j], d[k]);
                 }
             }
         }
-        a = m;
+        
+        na = 0;
+        for (int j = 0; j < nd; j++) {
+            if (na == 0) {
+                a[na++] = d[j];
+            } else {
+                if (d[j].l <= a[na - 1].r + 1) {
+                    a[na - 1].r = max(a[na - 1].r, d[j].r);
+                } else {
+                    a[na++] = d[j];
+                }
+            }
+        }
     }
-    return !a.empty();
+    return na > 0;
 }
 
 void run() {
