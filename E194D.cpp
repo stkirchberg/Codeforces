@@ -1,66 +1,49 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-void solve() {
-    long long n;
-    cin >> n;
-    string s;
-    cin >> s;
-
-    long long l = 1, r = n + 2, a = -1;
-    while (l <= r) {
-        long long m = (l + r) / 2;
-        bool ok = true;
-        long long p = 0, q = 0;
-
-        for (char c : s) {
-            long long u = 1e18, v = -1e18;
-            if (p == q) {
-                long long w = p;
-                long long x1 = w - m, y1 = w - 1;
-                long long x2 = w + 1, y2 = w + m;
-                if (c == '+') {
-                    x1 = max(x1, 1LL); x2 = max(x2, 1LL);
-                } else if (c == '-') {
-                    y1 = min(y1, -1LL); y2 = min(y2, -1LL);
-                } else {
-                    x1 = max(x1, 0LL); y1 = min(y1, 0LL);
-                    x2 = max(x2, 0LL); y2 = min(y2, 0LL);
-                }
-                if (x1 <= y1) { u = min(u, x1); v = max(v, y1); }
-                if (x2 <= y2) { u = min(u, x2); v = max(v, y2); }
-            } else {
-                long long x = p - m, y = q + m;
-                if (c == '+') { u = max(x, 1LL); v = y; }
-                else if (c == '-') { u = x; v = min(y, -1LL); }
-                else {
-                    if (x <= 0 && 0 <= y) { u = 0; v = 0; }
-                }
-            }
-            if (u > v) {
-                ok = false;
-                break;
-            }
-            p = u; q = v;
-        }
-
-        if (ok) {
-            a = m;
-            r = m - 1;
+bool f(int k, string& s, int n) {
+    long long l = 0, r = 0;
+    for (int i = 0; i < n; i++) {
+        char c = s[i];
+        if (c == '0') {
+            bool w = (max(l, -(long long)k) <= min(r, -1LL)) || (max(l, 1LL) <= min(r, (long long)k));
+            if (!w) return 0;
+            l = 0; r = 0;
+        } else if (c == '+') {
+            long long u = r + k;
+            if (u < 1) return 0;
+            long long v = (r >= 2) ? max(1LL, l - k) : max(1LL, l + 1);
+            l = v; r = u;
         } else {
-            l = m + 1;
+            long long v = l - k;
+            if (v > -1) return 0;
+            long long u = (l <= -2) ? min(-1LL, r + k) : min(-1LL, r - 1);
+            l = v; r = u;
         }
     }
-    cout << a << "\n";
+    return 1;
 }
 
 int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    long long t;
-    cin >> t;
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    int t;
+    if (!(cin >> t)) return 0;
     while (t--) {
-        solve();
+        int n;
+        string s;
+        cin >> n >> s;
+        int a = 1, b = n, z = -1;
+        while (a <= b) {
+            int m = (a + b) / 2;
+            if (f(m, s, n)) {
+                z = m;
+                b = m - 1;
+            } else {
+                a = m + 1;
+            }
+        }
+        cout << z << "\n";
     }
     return 0;
 }
