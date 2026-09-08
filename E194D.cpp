@@ -1,75 +1,57 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-bool c(long long k, const string& s) {
-    long long l = 0, r = 0;
-    for (char x : s) {
-        long long u, v;
-        if (l == r) {
-            long long w = l;
-            long long a = w - k, b = w - 1;
-            long long d = w + 1, e = w + k;
-            if (x == '+') {
-                a = max(a, 1LL);
-                d = max(d, 1LL);
-            } else if (x == '-') {
-                b = min(b, -1LL);
-                e = min(e, -1LL);
-            } else {
-                a = max(a, 0LL); b = min(b, 0LL);
-                d = max(d, 0LL); e = min(e, 0LL);
-            }
-            bool f = (a <= b);
-            bool g = (d <= e);
-            if (f && g) {
-                u = min(a, d);
-                v = max(b, e);
-            } else if (f) {
-                u = a; v = b;
-            } else if (g) {
-                u = d; v = e;
-            } else {
-                return false;
-            }
-        } else {
-            long long a = l - k, b = r + k;
-            if (x == '+') {
-                u = max(a, 1LL);
-                v = b;
-            } else if (x == '-') {
-                u = a;
-                v = min(b, -1LL);
-            } else {
-                if (a <= 0 && 0 <= b) {
-                    u = 0; v = 0;
-                } else {
-                    return false;
-                }
-            }
-        }
-        if (u > v) return false;
-        l = u; r = v;
-    }
-    return true;
-}
-
 void solve() {
     long long n;
     cin >> n;
     string s;
     cin >> s;
-    
-    long long a = 1, b = n + 2, p = -1;
-    while (a <= b) {
-        long long m = a + (b - a) / 2;
-        if (c(m, s)) {
-            p = m;
-            b = m - 1;
+
+    long long l = 1, r = n + 2, a = -1;
+    while (l <= r) {
+        long long m = (l + r) / 2;
+        bool ok = true;
+        long long p = 0, q = 0;
+
+        for (char c : s) {
+            long long u = 1e18, v = -1e18;
+            if (p == q) {
+                long long w = p;
+                long long x1 = w - m, y1 = w - 1;
+                long long x2 = w + 1, y2 = w + m;
+                if (c == '+') {
+                    x1 = max(x1, 1LL); x2 = max(x2, 1LL);
+                } else if (c == '-') {
+                    y1 = min(y1, -1LL); y2 = min(y2, -1LL);
+                } else {
+                    x1 = max(x1, 0LL); y1 = min(y1, 0LL);
+                    x2 = max(x2, 0LL); y2 = min(y2, 0LL);
+                }
+                if (x1 <= y1) { u = min(u, x1); v = max(v, y1); }
+                if (x2 <= y2) { u = min(u, x2); v = max(v, y2); }
+            } else {
+                long long x = p - m, y = q + m;
+                if (c == '+') { u = max(x, 1LL); v = y; }
+                else if (c == '-') { u = x; v = min(y, -1LL); }
+                else {
+                    if (x <= 0 && 0 <= y) { u = 0; v = 0; }
+                }
+            }
+            if (u > v) {
+                ok = false;
+                break;
+            }
+            p = u; q = v;
+        }
+
+        if (ok) {
+            a = m;
+            r = m - 1;
         } else {
-            a = m + 1;
+            l = m + 1;
         }
     }
-    cout << p << "\n";
+    cout << a << "\n";
 }
 
 int main() {
