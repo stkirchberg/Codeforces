@@ -8,7 +8,7 @@ struct P {
 string s;
 int n;
 
-bool chk(long long c) {
+bool chk(int c) {
     P a[4];
     int na = 1;
     a[0] = {0, 0};
@@ -82,17 +82,13 @@ void run() {
             return;
         }
     }
-    long long lo = 1, hi = 2LL * n + 5, ans = -1;
-    while (lo <= hi) {
-        long long mid = lo + (hi - lo) / 2;
-        if (chk(mid)) {
-            ans = mid;
-            hi = mid - 1;
-        } else {
-            lo = mid + 1;
-        }
+    if (chk(1)) {
+        cout << 1 << "\n";
+    } else if (chk(2)) {
+        cout << 2 << "\n";
+    } else {
+        cout << 3 << "\n";
     }
-    cout << ans << "\n";
 }
 
 int main() {
